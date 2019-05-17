@@ -1,0 +1,29 @@
+function plot_lindo(U; buf=fill((0.0,0.0), (size(u,2), size(u,3))), kwargs...)
+
+    for i = 1:size(U,2), j = 1:size(U,3)
+        buf[i,j] = (U[3,i,j], U[4,i,j])
+    end
+
+    Plots.scatter(reshape(buf, size(buf,1)*size(buf,2)); kwargs...)
+end
+
+function render(
+    sol;
+    fps=10,
+    xlims=(0.0,size(sol.u[1],2)+1),
+    ylims=(-(size(sol.u[1],3)+1), 0.0),
+    buf = fill((0.0,0.0), (size(sol.u[1],2), size(sol.u[1],3))))
+
+    Juno.progress(name = "Rendering...") do id
+        tmax = sol.t[end]
+
+        anim = @animate for t = 0.0:1.0/fps:tmax
+            plot_lindo(sol(t), buf=buf, xlims=xlims, ylims=ylims)
+            @info "Rendering..." progress=t/(tmax*fps) _id=id
+        end
+        g = gif(anim, "$(pwd())/img/$(size(u,2))x$(size(u,3)).gif", fps=fps)
+        mp4(anim, "$(pwd())/img/$(size(u,2))x$(size(u,3)).mp4", fps=fps)
+        @info "Rendering..." progress="done" _id=id
+        display(g)
+    end
+end
