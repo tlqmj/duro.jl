@@ -14,16 +14,21 @@ function render(
     ylims=(-(size(sol.u[1],3)+1), 0.0),
     buf = fill((0.0,0.0), (size(sol.u[1],2), size(sol.u[1],3))))
 
+    tmax = sol.t[end]
+    M = size(sol.u[1], 2)
+    N = size(sol.u[1], 3)
+
     Juno.progress(name = "Rendering...") do id
-        tmax = sol.t[end]
 
         anim = @animate for t = 0.0:1.0/fps:tmax
             plot_lindo(sol(t), buf=buf, xlims=xlims, ylims=ylims)
             @info "Rendering..." progress=t/(tmax*fps) _id=id
         end
-        g = gif(anim, "$(pwd())/img/$(size(u,2))x$(size(u,3)).gif", fps=fps)
-        mp4(anim, "$(pwd())/img/$(size(u,2))x$(size(u,3)).mp4", fps=fps)
-        @info "Rendering..." progress="done" _id=id
+
+        g = gif(anim, "$(pwd())/img/$(M)x$(N).gif", fps=fps)
+        mp4(anim, "$(pwd())/img/$(M)x$(N).mp4", fps=fps)
+
         display(g)
+        @info "Rendering..." progress="done" _id=id
     end
 end
