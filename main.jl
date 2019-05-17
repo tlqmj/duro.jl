@@ -1,4 +1,6 @@
-using DifferentialEquations, Makie, Plots, BenchmarkTools, Distributed, SharedArrays
+@info "Starting"
+using DifferentialEquations, Plots
+@info "Packages loaded"
 
 function rigid!(du, u, p, t)
     l_diag = sqrt(2.0)*p[:l₀]
@@ -64,27 +66,46 @@ function rigid!(du, u, p, t)
     end
 end
 
-function runbenchmarks(N)
-    p = (k_m=1.0, l₀ = 1.0)
+function plot_lindo!(p, U; kwargs...)
 
-    u = zeros(Float64, (4,N,N))
-    for i = 1:size(u,2), j=1:size(u,3)
-        u[3,i,j] = j*p[:l₀]
-        u[4,i,j] = -i*p[:l₀]
+    for i = 1:size(U,2), j = 1:size(U,3)
+        p[i,j] = (U[3,i,j], U[4,i,j])
     end
-    u[3,1,1] = 0.25*p[:l₀]
-    u[4,1,1] = -0.25*p[:l₀]
 
-    for f in (rigid!, rigid2!)
-        du = zeros(Float64, size(u))
-        @info f
-        @btime $(f)(du, u, p, 0.0)
-    end
+    Plots.scatter(reshape(p, size(p,1)*size(p,2)); kwargs...)
 end
 
 
+N = 4;
+u = zeros(Float64, (4,N,N))
+p = (k_m=0.1, l₀ = 1.0)
+
+for i = 1:size(u,2), j=1:size(u,3)
+    u[3,i,j] = j*p[:l₀]
+    u[4,i,j] = -i*p[:l₀]
+end
+u[3,1,1] += 0.25*p[:l₀]
+u[4,1,1] += -0.25*p[:l₀]
+
+tmax = 5.0
+fps  = 10
+t = (0.0, tmax)
+
+buf = fill((0.0,0.0), (size(u,2), size(u,3)))
+display(plot_lindo!(buf, u))
 
 prob = ODEProblem(rigid!, u, t, p)
-sol = solve(prob, RadauIIA5(), progress=true)
+sol = solve(prob, progress=true, Rodas4P())
+@info "System integrated"
 
-Plots.plot(sol)
+Juno.progress(name = "Rendering") do id
+    global sol
+    anim = @animate for t = 1.0:1.0/fps:tmax
+        plot_lindo!(buf, sol(t), xlims=(0.0,size(u,2)+1), ylims=(-(size(u,3)+1), 0.0))
+        @info "Rendering" progress=t/(tmax*fps) _id=id
+    end
+    g = gif(anim, "$(pwd())/img/$(size(u,2))x$(size(u,3)).gif", fps=fps)
+    mp4(anim, "$(pwd())/img/$(size(u,2))x$(size(u,3)).mp4", fps=fps)
+    @info "Rendering" progress="done" _id=id
+    return g
+end
