@@ -22,7 +22,7 @@ function render(
 
         anim = @animate for t = 0.0:1.0/fps:tmax
             plot_lindo(sol(t), buf=buf, xlims=xlims, ylims=ylims)
-            @info "Rendering..." progress=t/(tmax*fps) _id=id
+            @info "Rendering..." progress=t/tmax _id=id
         end
 
         g = gif(anim, "$(pwd())/img/$(M)x$(N).gif", fps=fps)
