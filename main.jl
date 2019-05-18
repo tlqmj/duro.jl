@@ -1,5 +1,6 @@
 @info "Starting..."
-using DifferentialEquations, Makie, JLD2, FileIO
+using DifferentialEquations, Makie
+using BSON: @save, @load
 include("system.jl")
 include("util.jl")
 include("plotting.jl")
@@ -20,8 +21,8 @@ plot_lindo(u₀)
 prob = ODEProblem(rigid!, u₀, t, p)
 @time sol = solve(prob, progress=true, force_dtmin=true, DifferentialEquations.TRBDF2())
 
-@info "Saving solution to $(pwd())/data/$(N)x$(M).jld"
-@save "$(pwd())/data/$(N)x$(M).jld" sol
+@info "Saving solution to $(pwd())/data/$(N)x$(M).bson"
+@time @save "$(pwd())/data/$(N)x$(M).bson" sol
 
 @info "Rendering..."
 @time render(sol)
