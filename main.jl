@@ -5,9 +5,9 @@ include("util.jl")
 include("plotting.jl")
 
 @info "Defining ODE system..."
-N = M = 5;
+N = M = 10;
 p = (k_m=0.1, l₀ = 1.0)
-t = (0.0, 15.0)
+t = (0.0, 60.0)
 
 u₀ = uniform_grid(N, M, p[:l₀])
 u₀[3,1,1] += 0.25*p[:l₀]

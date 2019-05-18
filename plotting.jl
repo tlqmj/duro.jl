@@ -1,10 +1,10 @@
-function plot_lindo(U; buf=fill((0.0,0.0), (size(u,2), size(u,3))), kwargs...)
+function plot_lindo(U; buf=fill((0.0,0.0), (size(u,2), size(u,3))), label="", kwargs...)
 
     for i = 1:size(U,2), j = 1:size(U,3)
         buf[i,j] = (U[3,i,j], U[4,i,j])
     end
 
-    Plots.scatter(reshape(buf, size(buf,1)*size(buf,2)); kwargs...)
+    Plots.scatter(reshape(buf, size(buf,1)*size(buf,2)); label=label, kwargs...)
 end
 
 function render(
