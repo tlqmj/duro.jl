@@ -6,12 +6,12 @@ function rigid!(du, u, p, t)
         c = (p[:l₀]/sqrt((u[3,i+1,j] - u[3,i,j])^2 + (u[4,i+1,j] - u[4,i,j])^2) - 1.0)
 
         k = c*(u[3,i+1,j] - u[3,i,j])
-        du[1,i,j]   += k
-        du[1,i+1,j] -= k
+        du[1,i,j]   -= k
+        du[1,i+1,j] += k
 
         k = c*(u[4,i+1,j] - u[4,i,j])
-        du[2,i,j]   += k
-        du[2,i+1,j] -= k
+        du[2,i,j]   -= k
+        du[2,i+1,j] += k
     end
 
     # Diagonales (\)
@@ -19,12 +19,12 @@ function rigid!(du, u, p, t)
         c = (l_diag/sqrt((u[3,i+1,j+1] - u[3,i,j])^2 + (u[4,i+1,j+1] - u[4,i,j])^2) - 1.0)
 
         k = c*(u[3,i+1,j+1] - u[3,i,j])
-        du[1,i,j]     += k
-        du[1,i+1,j+1] -= k
+        du[1,i,j]     -= k
+        du[1,i+1,j+1] += k
 
         k = c*(u[4,i+1,j+1] - u[4,i,j])
-        du[2,i,j]     += k
-        du[2,i+1,j+1] -= k
+        du[2,i,j]     -= k
+        du[2,i+1,j+1] += k
     end
 
     # Diagonales (/)
@@ -32,12 +32,12 @@ function rigid!(du, u, p, t)
         c = (l_diag/sqrt((u[3,i-1,j+1] - u[3,i,j])^2 + (u[4,i-1,j+1] - u[4,i,j])^2) - 1.0)
 
         k = c*(u[3,i-1,j+1] - u[3,i,j])
-        du[1,i,j]     += k
-        du[1,i-1,j+1] -= k
+        du[1,i,j]     -= k
+        du[1,i-1,j+1] += k
 
         k = c*(u[4,i-1,j+1] - u[4,i,j])
-        du[2,i,j]     += k
-        du[2,i-1,j+1] -= k
+        du[2,i,j]     -= k
+        du[2,i-1,j+1] += k
     end
 
     # Horizontales
@@ -45,12 +45,12 @@ function rigid!(du, u, p, t)
         c = (p[:l₀]/sqrt((u[3,i,j+1] - u[3,i,j])^2 + (u[4,i,j+1] - u[4,i,j])^2) - 1.0)
 
         k = c*(u[3,i,j+1] - u[3,i,j])
-        du[1,i,j]   += k
-        du[1,i,j+1] -= k
+        du[1,i,j]   -= k
+        du[1,i,j+1] += k
 
         k = c*(u[4,i,j+1] - u[4,i,j])
-        du[2,i,j]   += k
-        du[2,i,j+1] -= k
+        du[2,i,j]   -= k
+        du[2,i,j+1] += k
     end
 
 
