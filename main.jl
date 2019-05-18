@@ -21,9 +21,9 @@ plot_lindo(u₀)
 prob = ODEProblem(rigid!, u₀, t, p)
 @time sol = solve(prob, progress=true, force_dtmin=true, DifferentialEquations.TRBDF2())
 
-@info "Saving solution to $(pwd())/data/$(N)x$(M).bson"
-@time @save "$(pwd())/data/$(N)x$(M).bson" sol
+@save "$(pwd())/data/$(N)x$(M).bson" sol
+@info "Saved solution to $(pwd())/data/$(N)x$(M).bson"
 
 @info "Rendering..."
-@time render(sol)
+render(sol)
 @info "Done."
