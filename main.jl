@@ -14,7 +14,7 @@ u₀[3,:,1] .+= 0.3*p[:l₀]
 #u₀[4,1,1] += -0.25*p[:l₀]
 
 @info "Displaying initial positions."
-scene = plot_lindo(u₀)
+plot_lindo(u₀)
 
 @info "Integrating ODE system..."
 prob = ODEProblem(rigid!, u₀, t, p)
