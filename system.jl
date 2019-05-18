@@ -44,11 +44,11 @@ function rigid!(du, u, p, t)
     @inbounds for j=1:(size(u,3)-1), i =1:size(u,2)
         c = (p[:l₀]/sqrt((u[3,i,j+1] - u[3,i,j])^2 + (u[4,i,j+1] - u[4,i,j])^2) - 1.0)
 
-        k = c*(u[3,i,j] - u[3,i,j+1])
+        k = c*(u[3,i,j+1] - u[3,i,j])
         du[1,i,j]   += k
         du[1,i,j+1] -= k
 
-        k = c*(u[4,i,j] - u[4,i,j+1])
+        k = c*(u[4,i,j+1] - u[4,i,j])
         du[2,i,j]   += k
         du[2,i,j+1] -= k
     end
