@@ -1,63 +1,44 @@
+# `u` is a (2,M,N) matrix of SVectors where u[1,i,j] is the position of
+# of particle (i,j) and u[2,i,j] is it's velocity.
+
+function add_acc_component!(du, u, l₀, i::Integer, j::Integer, di::Integer, dj::Integer)
+
+    Δr = u[1,i+di,j+dj] - u[1,i,j]
+    am_k = Δr*(l₀/norm(Δr) - 1.0)
+
+    du[2,i,j]   -= am_k
+    du[2,i+di,j+dj] += am_k
+
+end
+
 function rigid!(du, u, p, t)
-    l_diag = sqrt(2.0)*p[:l₀]
+
+    M = size(u,2)
+    N = size(u,3)
+    l₀_diag = sqrt(2.0)*p[:l₀]
 
     # Verticales
-    @inbounds for j = 1:size(u,3), i = 1:(size(u,2)-1)
-        c = (p[:l₀]/sqrt((u[3,i+1,j] - u[3,i,j])^2 + (u[4,i+1,j] - u[4,i,j])^2) - 1.0)
-
-        k = c*(u[3,i+1,j] - u[3,i,j])
-        du[1,i,j]   -= k
-        du[1,i+1,j] += k
-
-        k = c*(u[4,i+1,j] - u[4,i,j])
-        du[2,i,j]   -= k
-        du[2,i+1,j] += k
+    @inbounds for i = 1:(M-1), j = 1:N
+        add_acc_component!(du, u, p[:l₀], i, j, +1, 0)
     end
 
     # Diagonales (\)
-    @inbounds for j = (1:size(u,3)-1), i = 1:(size(u,2)-1)
-        c = (l_diag/sqrt((u[3,i+1,j+1] - u[3,i,j])^2 + (u[4,i+1,j+1] - u[4,i,j])^2) - 1.0)
-
-        k = c*(u[3,i+1,j+1] - u[3,i,j])
-        du[1,i,j]     -= k
-        du[1,i+1,j+1] += k
-
-        k = c*(u[4,i+1,j+1] - u[4,i,j])
-        du[2,i,j]     -= k
-        du[2,i+1,j+1] += k
+    @inbounds for i = 1:(M-1), j = (1:N-1)
+        add_acc_component!(du, u, l₀_diag, i, j, +1, +1)
     end
 
     # Diagonales (/)
-    @inbounds for j = (1:size(u,3)-1), i = 2:size(u,2)
-        c = (l_diag/sqrt((u[3,i-1,j+1] - u[3,i,j])^2 + (u[4,i-1,j+1] - u[4,i,j])^2) - 1.0)
-
-        k = c*(u[3,i-1,j+1] - u[3,i,j])
-        du[1,i,j]     -= k
-        du[1,i-1,j+1] += k
-
-        k = c*(u[4,i-1,j+1] - u[4,i,j])
-        du[2,i,j]     -= k
-        du[2,i-1,j+1] += k
+    @inbounds for i = 2:M, j = (1:N-1)
+        add_acc_component!(du, u, l₀_diag, i, j, -1, +1)
     end
 
     # Horizontales
-    @inbounds for j=1:(size(u,3)-1), i =1:size(u,2)
-        c = (p[:l₀]/sqrt((u[3,i,j+1] - u[3,i,j])^2 + (u[4,i,j+1] - u[4,i,j])^2) - 1.0)
-
-        k = c*(u[3,i,j+1] - u[3,i,j])
-        du[1,i,j]   -= k
-        du[1,i,j+1] += k
-
-        k = c*(u[4,i,j+1] - u[4,i,j])
-        du[2,i,j]   -= k
-        du[2,i,j+1] += k
+    @inbounds for i =1:M, j=1:(N-1)
+        add_acc_component!(du, u, p[:l₀], i, j, 0, +1)
     end
 
-
-    @inbounds for j=1:size(u,3), i=1:size(u,2)
-        du[1,i,j] *= p[:k_m]
+    @inbounds for i = 1:M, j = 1:N
         du[2,i,j] *= p[:k_m]
-        du[3,i,j] =  u[1,i,j]
-        du[4,i,j] =  u[2,i,j]
+        du[1,i,j] =  u[2,i,j]
     end
 end

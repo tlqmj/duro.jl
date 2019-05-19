@@ -1,9 +1,9 @@
-function uniform_grid(N, M, l₀=1.0)
-    u = zeros(Float64, (4,N,M))
+function uniform_grid(M, N, l₀=1.0)
+    _l₀ = Float64(l₀)
 
-    for i = 1:N, j=1:M
-        u[3,i,j] = j*l₀
-        u[4,i,j] = -i*l₀
+    u = fill(SVector(0.0, 0.0), (2,M,N))
+    for i = 1:M, j=1:N
+        u[1,i,j] = SVector(j*_l₀, -i*_l₀)
     end
 
     return u

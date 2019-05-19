@@ -4,7 +4,7 @@ function plot_lindo(
     limits = FRect(0, -(size(U,3)+1), size(U,2)+1, (size(U,3)+1)),
     kwargs...)
 
-    scatter(reshape(U[3,:,:], size(U,2)*size(U,3)), reshape(U[4,:,:], size(U,2)*size(U,3)); label=label, limits=limits, kwargs...)
+    scatter(reshape(U[1,:,:], size(U,2)*size(U,3)); label=label, limits=limits, kwargs...)
 end
 
 function render(
