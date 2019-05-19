@@ -19,8 +19,7 @@ function render(
     record(scene, path, framerate=fps) do io
         for t = 0.0:1.0/fps:tmax
             u = sol(t)
-            push!(scene.plots[end].input_args[1], reshape(u[3,:,:], size(u,2)*size(u,3)))
-            push!(scene.plots[end].input_args[2], reshape(u[4,:,:], size(u,2)*size(u,3)))
+            push!(scene[end][1], reshape(u[1,:,:], size(u,2)*size(u,3)))
             recordframe!(io)
             Base.CoreLogging.@logmsg(-1,"Rendering...",_id = :Render, message="$(t)s", progress=t/tmax)
         end

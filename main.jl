@@ -1,5 +1,5 @@
 @info "Starting..."
-using LinearAlgebra, DifferentialEquations, Makie
+using LinearAlgebra, StaticArrays, DifferentialEquations, Makie
 using BSON: @save, @load
 include("system.jl")
 include("util.jl")

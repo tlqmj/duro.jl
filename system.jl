@@ -1,16 +1,16 @@
 # `u` is a (2,M,N) matrix of SVectors where u[1,i,j] is the position of
 # of particle (i,j) and u[2,i,j] is it's velocity.
 
-function add_acc_component!(du, u, l₀, i::Integer, j::Integer, di::Integer, dj::Integer)
+"""
+    rigid!(du, u, p, t)
 
-    Δr = u[1,i+di,j+dj] - u[1,i,j]
-    am_k = Δr*(l₀/norm(Δr) - 1.0)
-
-    du[2,i,j]   -= am_k
-    du[2,i+di,j+dj] += am_k
-
-end
-
+Defines the system of equations for a solid modeled as particles linked by springs.
+    
+`u` is a (2,M,N) matrix of SVectors where u[1,i,j] is the position of
+of particle (i,j) and u[2,i,j] is it's velocity.
+`p` is a named touple with two components: `k_m` which is the spring constant `k`
+divided by the mass `m`, and `l₀` which is the natural length between the particles.
+"""
 function rigid!(du, u, p, t)
 
     M = size(u,2)
@@ -41,4 +41,14 @@ function rigid!(du, u, p, t)
         du[2,i,j] *= p[:k_m]
         du[1,i,j] =  u[2,i,j]
     end
+end
+
+@inline function add_acc_component!(du, u, l₀, i::Integer, j::Integer, di::Integer, dj::Integer)
+
+    Δr = u[1,i+di,j+dj] - u[1,i,j]
+    am_k = Δr*(l₀/norm(Δr) - 1.0)
+
+    du[2,i,j]   -= am_k
+    du[2,i+di,j+dj] += am_k
+
 end
